@@ -1,0 +1,20 @@
+[package]
+authors = [
+    "Ryan Haywood",
+]
+categories = ["gui", "wasm", "web-programming"]
+description = "Simple drawing app"
+edition = "2018"
+keywords = ["yew", "wasm", "wasm-bindgen", "web"]
+license = "MIT/Apache-2.0"
+name = "tiles"
+readme = "README.md"
+repository = "https://github.com/haywoood/tiles-rust"
+version = "0.1.0"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+wasm-bindgen = "^0.2"
+yew = "0.12"
