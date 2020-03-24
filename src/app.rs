@@ -20,56 +20,8 @@ pub struct BoardRow {
     tile_rows: Vec<RowTile>,
 }
 
-impl BoardRow {
-    fn new(index: u32, default_tile: &Tile) -> BoardRow {
-        let t = default_tile.clone();
-        let mut tile_rows = Vec::new();
-        for n in 0..18 {
-            let slug = format!("row-{}-tile-{}", index, n);
-            tile_rows.push(
-                RowTile {
-                    slug: slug,
-                    row_index: index,
-                    tile_index: n,
-                    tile: t.clone(),
-                }
-            );
-        }
-        BoardRow {
-            tile_rows: tile_rows,
-        }
-    }
-}
-
 pub struct Board {
     rows: Vec<BoardRow>,
-}
-
-impl Board {
-    fn new(default_tile: &Tile) -> Board {
-        let mut rows = Vec::new();
-        for n in 0..14 {
-            rows.push(BoardRow::new(n, default_tile))
-        }
-        Board {
-            rows: rows,
-        }
-    }
-}
-
-impl Tile {
-    /// Creates a new Tile.
-    fn new(background_color: &str, color: &str) -> Tile {
-        let bg_string = background_color.to_string();
-        let color_string = color.to_string();
-        let slug = format!("{}-{}", bg_string, color_string);
-
-        Tile {
-            slug: slug,
-            background_color: bg_string,
-            color: color_string,
-        }
-    }
 }
 
 struct State {
@@ -136,12 +88,8 @@ impl Component for Model {
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
-            Msg::EndDrag => {
-                self.state.dragging = false
-            }
-            Msg::SelectLegendTile(tile) => {
-                self.state.selected = Some(tile)
-            }
+            Msg::EndDrag => self.state.dragging = false,
+            Msg::SelectLegendTile(tile) => self.state.selected = Some(tile),
             Msg::MaybeSelectBoardTile(row_tile) => {
                 if self.state.dragging {
                     let selected_tile = match &self.state.selected {
@@ -149,7 +97,9 @@ impl Component for Model {
                         None => &self.state.blank_tile,
                     };
                     self.state.dragging = true;
-                    self.state.board.rows[row_tile.row_index as usize].tile_rows[row_tile.tile_index as usize].tile = selected_tile.clone()
+                    self.state.board.rows[row_tile.row_index as usize].tile_rows
+                        [row_tile.tile_index as usize]
+                        .tile = selected_tile.clone()
                 }
             }
             Msg::SelectBoardTile(row_tile) => {
@@ -158,7 +108,9 @@ impl Component for Model {
                     None => &self.state.blank_tile,
                 };
                 self.state.dragging = true;
-                self.state.board.rows[row_tile.row_index as usize].tile_rows[row_tile.tile_index as usize].tile = selected_tile.clone()
+                self.state.board.rows[row_tile.row_index as usize].tile_rows
+                    [row_tile.tile_index as usize]
+                    .tile = selected_tile.clone()
             }
         }
         true
@@ -189,7 +141,7 @@ impl Model {
         let t = tile.clone();
         let mut class_string = "Tile-wrap".to_string();
         if tile.slug == self.state.get_selected_tile().slug {
-           class_string = format!("{} {}", class_string, "Tile-selected");
+            class_string = format!("{} {}", class_string, "Tile-selected");
         }
         html! {
             <div class={class_string}
@@ -243,6 +195,50 @@ impl State {
         match &self.selected {
             Some(tile) => tile,
             None => &self.blank_tile,
+        }
+    }
+}
+
+impl Board {
+    fn new(default_tile: &Tile) -> Board {
+        let mut rows = Vec::new();
+        for n in 0..14 {
+            rows.push(BoardRow::new(n, default_tile))
+        }
+        Board { rows: rows }
+    }
+}
+
+impl BoardRow {
+    fn new(index: u32, default_tile: &Tile) -> BoardRow {
+        let t = default_tile.clone();
+        let mut tile_rows = Vec::new();
+        for n in 0..18 {
+            let slug = format!("row-{}-tile-{}", index, n);
+            tile_rows.push(RowTile {
+                slug: slug,
+                row_index: index,
+                tile_index: n,
+                tile: t.clone(),
+            });
+        }
+        BoardRow {
+            tile_rows: tile_rows,
+        }
+    }
+}
+
+impl Tile {
+    /// Creates a new Tile.
+    fn new(background_color: &str, color: &str) -> Tile {
+        let bg_string = background_color.to_string();
+        let color_string = color.to_string();
+        let slug = format!("{}-{}", bg_string, color_string);
+
+        Tile {
+            slug: slug,
+            background_color: bg_string,
+            color: color_string,
         }
     }
 }
